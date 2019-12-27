@@ -13,7 +13,14 @@ import os
 import copy
 import collections
 
-class random_movement(object):
+"""
+NOTE: In our experience, parameters can vary depending on the simulator and how well the duckiebot
+is calibrated. Proper tuning of parameters makes a big difference in performance. Parameters can be
+changed using "rosparam set [param_name] [param_value]" to make tuning more convenient. The most sensitive
+parameters are the following: lane_width, v_min, v_max, dv_neg, dv_pos, w_gain_min, w_gain_max
+"""
+
+class pure_pursuit(object):
 	def __init__(self):
 		self.node_name = rospy.get_name()
 		self.node_namespace = rospy.get_namespace()
@@ -47,7 +54,8 @@ class random_movement(object):
 			white_dir_correction = 0.5
 			yellow_dir_correction = 0.5
 			params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3) # safe and steady
-			# params = Parameters(v_min=0.25, v_max=0.75, dv_neg=-0.3, dv_pos=0.05, w_gain_min=0.15, w_gain_max=1.7, num_y_vup=1, num_r_vdown=3, right_wg_scale=1., func='x2', obs_stop_thresh=0.3) # fast and jerky
+			# params = Parameters(v_min=0.2, v_max=0.65, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.55, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x', obs_stop_thresh=0.3) # fast and jerky
+			# params = Parameters(v_min=0.2, v_max=0.85, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.48, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x', obs_stop_thresh=0.3) # faster and jerkier
 
 		# Ros parameters
 		self.rosparamlist = ['verbose', 'vehicle_avoidance']
@@ -386,7 +394,7 @@ class random_movement(object):
 		
 if __name__ == "__main__":
 
-	rospy.init_node("random_movement_node", anonymous=False)
+	rospy.init_node("pure_pursuit_node", anonymous=False)
 
-	random_movement = random_movement()
+	pure_pursuit = pure_pursuit()
 	rospy.spin()
