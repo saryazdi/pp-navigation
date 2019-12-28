@@ -39,8 +39,6 @@ class pure_pursuit(object):
 			self.loginfo('***********************')
 			self.loginfo('Using simulation parameters for pure pursuit')
 			self.lookahead_distance = 0.25
-			lane_width = 0.36
-			robot_width = 0.12
 			white_dir_correction = 0.5
 			yellow_dir_correction = 0.25
 			params = Parameters(v_min=0.3, v_max=0.7, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=1.5, num_y_vup=1, num_r_vdown=1, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3, lane_width=0.36, robot_width=0.12)
@@ -51,8 +49,6 @@ class pure_pursuit(object):
 			self.loginfo('*********************')
 			self.loginfo('Using hardware parameters for pure pursuit')
 			self.lookahead_distance = 0.25
-			lane_width = 0.23
-			robot_width = 0.12
 			white_dir_correction = 0.5
 			yellow_dir_correction = 0.5
 			params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3, lane_width=0.36, robot_width=0.12) # safe and steady
