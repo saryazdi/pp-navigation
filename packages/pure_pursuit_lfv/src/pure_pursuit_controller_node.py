@@ -39,9 +39,7 @@ class pure_pursuit(object):
 			self.loginfo('***********************')
 			self.loginfo('Using simulation parameters for pure pursuit')
 			self.lookahead_distance = 0.25
-			white_dir_correction = 0.5
-			yellow_dir_correction = 0.25
-			params = Parameters(v_min=0.3, v_max=0.7, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=1.5, num_y_vup=1, num_r_vdown=1, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3, lane_width=0.36, robot_width=0.12)
+			params = Parameters(v_min=0.3, v_max=0.7, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=1.5, num_y_vup=1, num_r_vdown=1, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3, lane_width=0.36, robot_width=0.12, white_dir_correction=0.5, yellow_dir_correction=0.25)
 		else:
 			# Hardware parameters
 			self.loginfo('*********************')
@@ -49,12 +47,8 @@ class pure_pursuit(object):
 			self.loginfo('*********************')
 			self.loginfo('Using hardware parameters for pure pursuit')
 			self.lookahead_distance = 0.25
-			white_dir_correction = 0.5
-			yellow_dir_correction = 0.5
-			params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3, lane_width=0.36, robot_width=0.12) # safe and steady
-			# params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=1.0, w_gain_max=3.1, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3, lane_width=0.26, robot_width=0.12) # safe and steady
-			# params = Parameters(v_min=0.2, v_max=0.65, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.55, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x', obs_stop_thresh=0.3, lane_width=0.2, robot_width=0.12) # fast and jerky
-			# params = Parameters(v_min=0.2, v_max=0.85, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.48, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x', obs_stop_thresh=0.3, lane_width=0.2, robot_width=0.12) # faster and jerkier
+			# params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3, lane_width=0.36, robot_width=0.12, white_dir_correction=0.5, yellow_dir_correction=0.5) # safe and steady
+			params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.75, w_gain_max=2.5, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.0, func='x2', obs_stop_thresh=0.3, lane_width=0.26, robot_width=0.12, white_dir_correction=1.0, yellow_dir_correction=1.1) # safe and steady
 
 		# Ros parameters
 		self.rosparamlist = ['verbose', 'vehicle_avoidance']
@@ -69,8 +63,8 @@ class pure_pursuit(object):
 		self.right_turn_thresh = self.setupParam('~right_turn_thresh', 0.2)
 		self.left_turn_std_ratio = self.setupParam('~left_turn_std_ratio', 1.5)
 		self.right_turn_std_ratio = self.setupParam('~right_turn_std_ratio', 1.3)
-		self.white_dir_correction = self.setupParam('~white_dir_correction', white_dir_correction)
-		self.yellow_dir_correction = self.setupParam('~yellow_dir_correction', yellow_dir_correction)
+		self.white_dir_correction = self.setupParam('~white_dir_correction', params.white_dir_correction)
+		self.yellow_dir_correction = self.setupParam('~yellow_dir_correction', params.yellow_dir_correction)
 
 		# Node attributes
 		self.gearbox = Gearbox(v_min=self.v_min, v_max=self.v_max, dv_neg=self.dv_neg, dv_pos=self.dv_pos, w_gain_min=self.w_gain_min, w_gain_max=self.w_gain_max, func=self.func)
