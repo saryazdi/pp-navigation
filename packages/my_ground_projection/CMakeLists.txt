@@ -48,12 +48,12 @@ include_directories(${YAML_CPP_INCLUDE_DIRS})
 
 
  
-# add_service_files(
-#   FILES
-#   GetGroundCoord.srv
-#   GetImageCoord.srv
-#   EstimateHomography.srv
-# )
+add_service_files(
+  FILES
+  GetGroundCoord.srv
+  GetImageCoord.srv
+  EstimateHomography.srv
+)
 
 generate_messages(
   DEPENDENCIES
