@@ -18,13 +18,15 @@ NOTE: In our experience, parameters can vary depending on the simulator and how 
 is calibrated. Proper tuning of parameters makes a big difference in performance. Parameters can be
 changed using "rosparam set [param_name] [param_value]" to make tuning more convenient. The most sensitive
 parameters are the following: lane_width, v_min, v_max, dv_neg, dv_pos, w_gain_min, w_gain_max
+
+Visit https://github.com/saryazdi/Duckietown-Object-Detection-LFV for more information.
 """
 
 class pure_pursuit(object):
 	def __init__(self):
 		self.node_name = rospy.get_name()
 		self.node_namespace = rospy.get_namespace()
-		Parameters = collections.namedtuple('parameters', 'v_min, v_max, dv_neg, dv_pos, w_gain_min, w_gain_max, func, num_y_vup, num_r_vdown, right_wg_scale, obs_stop_thresh')
+		Parameters = collections.namedtuple('parameters', 'v_min, v_max, dv_neg, dv_pos, w_gain_min, w_gain_max, func, num_y_vup, num_r_vdown, right_wg_scale, obs_stop_thresh, lane_width, robot_width')
 		self.loginfo('NAMESPACE: %s' % str(self.node_namespace))
 		self.loginfo('####################')
 		self.loginfo('### PURE_PURSUIT ###')
@@ -41,7 +43,7 @@ class pure_pursuit(object):
 			robot_width = 0.12
 			white_dir_correction = 0.5
 			yellow_dir_correction = 0.25
-			params = Parameters(v_min=0.3, v_max=0.7, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=1.5, num_y_vup=1, num_r_vdown=1, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3)
+			params = Parameters(v_min=0.3, v_max=0.7, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=1.5, num_y_vup=1, num_r_vdown=1, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3, lane_width=0.36, robot_width=0.12)
 		else:
 			# Hardware parameters
 			self.loginfo('*********************')
@@ -53,10 +55,10 @@ class pure_pursuit(object):
 			robot_width = 0.12
 			white_dir_correction = 0.5
 			yellow_dir_correction = 0.5
-			# params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3) # safe and steady
-			params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=1.0, w_gain_max=3.1, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3) # safe and steady
-			# params = Parameters(v_min=0.2, v_max=0.65, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.55, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x', obs_stop_thresh=0.3) # fast and jerky
-			# params = Parameters(v_min=0.2, v_max=0.85, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.48, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x', obs_stop_thresh=0.3) # faster and jerkier
+			params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3, lane_width=0.36, robot_width=0.12) # safe and steady
+			# params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=1.0, w_gain_max=3.1, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3, lane_width=0.26, robot_width=0.12) # safe and steady
+			# params = Parameters(v_min=0.2, v_max=0.65, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.55, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x', obs_stop_thresh=0.3, lane_width=0.2, robot_width=0.12) # fast and jerky
+			# params = Parameters(v_min=0.2, v_max=0.85, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.48, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x', obs_stop_thresh=0.3, lane_width=0.2, robot_width=0.12) # faster and jerkier
 
 		# Ros parameters
 		self.rosparamlist = ['verbose', 'vehicle_avoidance']
@@ -65,8 +67,8 @@ class pure_pursuit(object):
 		for (key, value) in params._asdict().items():
 			value = self.setupParam('~' + key, value)
 			setattr(self, key, value)
-		self.lane_width = self.setupParam('~lane_width', lane_width)
-		self.robot_width = self.setupParam('~robot_width', robot_width)
+		self.lane_width = self.setupParam('~lane_width', params.lane_width)
+		self.robot_width = self.setupParam('~robot_width', params.robot_width)
 		self.left_turn_thresh = self.setupParam('~left_turn_thresh', -0.17)
 		self.right_turn_thresh = self.setupParam('~right_turn_thresh', 0.2)
 		self.left_turn_std_ratio = self.setupParam('~left_turn_std_ratio', 1.5)
