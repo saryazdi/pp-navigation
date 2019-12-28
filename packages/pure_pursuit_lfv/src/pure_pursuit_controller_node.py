@@ -36,9 +36,9 @@ class pure_pursuit(object):
 			self.loginfo('*** SIMULATION MODE ***')
 			self.loginfo('***********************')
 			self.loginfo('Using simulation parameters for pure pursuit')
-			self.lane_width = 0.36
-			self.robot_width = 0.12
 			self.lookahead_distance = 0.25
+			lane_width = 0.36
+			robot_width = 0.12
 			white_dir_correction = 0.5
 			yellow_dir_correction = 0.25
 			params = Parameters(v_min=0.3, v_max=0.7, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=1.5, num_y_vup=1, num_r_vdown=1, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3)
@@ -48,12 +48,13 @@ class pure_pursuit(object):
 			self.loginfo('*** HARDWARE MODE ***')
 			self.loginfo('*********************')
 			self.loginfo('Using hardware parameters for pure pursuit')
-			self.lane_width = 0.2
-			self.robot_width = 0.12
 			self.lookahead_distance = 0.25
+			lane_width = 0.23
+			robot_width = 0.12
 			white_dir_correction = 0.5
 			yellow_dir_correction = 0.5
-			params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3) # safe and steady
+			# params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3) # safe and steady
+			params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=1.0, w_gain_max=3.1, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3) # safe and steady
 			# params = Parameters(v_min=0.2, v_max=0.65, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.55, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x', obs_stop_thresh=0.3) # fast and jerky
 			# params = Parameters(v_min=0.2, v_max=0.85, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.48, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x', obs_stop_thresh=0.3) # faster and jerkier
 
@@ -64,6 +65,8 @@ class pure_pursuit(object):
 		for (key, value) in params._asdict().items():
 			value = self.setupParam('~' + key, value)
 			setattr(self, key, value)
+		self.lane_width = self.setupParam('~lane_width', lane_width)
+		self.robot_width = self.setupParam('~robot_width', robot_width)
 		self.left_turn_thresh = self.setupParam('~left_turn_thresh', -0.17)
 		self.right_turn_thresh = self.setupParam('~right_turn_thresh', 0.2)
 		self.left_turn_std_ratio = self.setupParam('~left_turn_std_ratio', 1.5)
@@ -81,7 +84,6 @@ class pure_pursuit(object):
 		self.obslist_msg = None
 		self.detection_msg = False
 		self.detection_list = []
-		self.half_lane_width = 0.5 * self.lane_width
 		
 		# Publishers
 		self.pub_car_cmd = rospy.Publisher("~car_cmd", Twist2DStamped, queue_size=1)
@@ -283,7 +285,7 @@ class pure_pursuit(object):
 			avg_dir_normalized = avg_abs_dir / np.linalg.norm(avg_abs_dir)
 			h_offset = 1. if (color == 'white') else -1.
 			offset_dir = np.array([-avg_dir_normalized[1] * dir_correction, h_offset])
-			offset = self.half_lane_width * offset_dir
+			offset = 0.5 * self.lane_width * offset_dir
 			path_points = points + offset
 		return path_points
 
