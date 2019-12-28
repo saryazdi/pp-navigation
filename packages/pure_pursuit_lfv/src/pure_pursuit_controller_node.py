@@ -26,7 +26,7 @@ class pure_pursuit(object):
 	def __init__(self):
 		self.node_name = rospy.get_name()
 		self.node_namespace = rospy.get_namespace()
-		Parameters = collections.namedtuple('parameters', 'v_min, v_max, dv_neg, dv_pos, w_gain_min, w_gain_max, func, num_y_vup, num_r_vdown, right_wg_scale, obs_stop_thresh, lane_width, robot_width')
+		Parameters = collections.namedtuple('parameters', 'v_min, v_max, dv_neg, dv_pos, w_gain_min, w_gain_max, func, num_y_vup, num_r_vdown, right_wg_scale, obs_stop_thresh, lane_width, robot_width, white_dir_correction, yellow_dir_correction')
 		self.loginfo('NAMESPACE: %s' % str(self.node_namespace))
 		self.loginfo('####################')
 		self.loginfo('### PURE_PURSUIT ###')
