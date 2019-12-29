@@ -116,9 +116,6 @@ class DuckiebotDetectionNode(object):
 			self.loginfo('Could not decode image: %s' % e)
 			return
 
-		# self.loginfo('checkpoint1: %s' %str((rospy.Time.now() - now).to_sec()))
-		# now = rospy.Time.now()
-
 		start = rospy.Time.now()
 		hsv_image = cv2.cvtColor(image_cv, cv2.COLOR_BGR2HSV)
 		bw1 = cv2.inRange(hsv_image, self.low_range1, self.high_range1)
@@ -127,9 +124,6 @@ class DuckiebotDetectionNode(object):
 		
 		duckie_bw = cv2.erode(duckiebot_bw, self.erosion_kernel)
 		duckiebot_bw = cv2.dilate(duckiebot_bw, self.dilation_kernel)
-
-		# self.loginfo('checkpoint2: %s' %str((rospy.Time.now() - now).to_sec()))
-		# now = rospy.Time.now()
 
 		_, contours, _ = cv2.findContours(duckiebot_bw, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 		detection = False
@@ -148,9 +142,6 @@ class DuckiebotDetectionNode(object):
 				if h_fixed != 0:
 					duckiebot_boxes.append([x,y_fixed,w,h_fixed])
 					detection = True
-		
-		# self.loginfo('checkpoint3: %s' %str((rospy.Time.now() - now).to_sec()))
-		# now = rospy.Time.now()
 
 		# publish whether we've had any duckiebot detections
 		duckiebot_detected_msg_out.data = detection
