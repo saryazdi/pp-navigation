@@ -47,8 +47,7 @@ class pure_pursuit(object):
 			self.loginfo('*********************')
 			self.loginfo('Using hardware parameters for pure pursuit')
 			self.lookahead_distance = 0.25
-			# params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3, lane_width=0.36, robot_width=0.12, white_dir_correction=0.5, yellow_dir_correction=0.5) # safe and steady
-			params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.75, w_gain_max=2.5, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.0, func='x2', obs_stop_thresh=0.3, lane_width=0.26, robot_width=0.12, white_dir_correction=1.0, yellow_dir_correction=1.1) # safe and steady
+			params = Parameters(v_min=0.2, v_max=0.5, dv_neg=-0.25, dv_pos=0.03, w_gain_min=0.62, w_gain_max=2.6, num_y_vup=1, num_r_vdown=3, right_wg_scale=1.05, func='x2', obs_stop_thresh=0.3, lane_width=0.36, robot_width=0.12, white_dir_correction=0.5, yellow_dir_correction=0.5) # safe and steady
 
 		# Ros parameters
 		self.rosparamlist = ['verbose', 'vehicle_avoidance']
@@ -199,28 +198,25 @@ class pure_pursuit(object):
 			self.pub_path_points.publish(image_msg_out)
 
 	def collisionSafetyStop(self, msg_header=None):
-		try: # TODO: for some reason on some rare occasions we dont get (bounding box * 4) corners
-			for tl, tr, br, bl in self.detection_list:
-				if ((bl[0] > 0) and (bl[0] < self.obs_stop_thresh)) or ((br[0] > 0) and (br[0] < self.obs_stop_thresh)):
-					robot_occ = [-self.robot_width / 2, self.robot_width / 2]
-					rightBound = np.maximum(-self.robot_width, br[1])
-					leftBound = np.minimum(self.robot_width, bl[1])
-					# self.loginfo('bl: %s | br: %s' % (str(bl), str(br)))
-					# self.loginfo('tl: %s | tr: %s' % (str(tl), str(tr)))
-					# self.loginfo('leftBound - rightBound: %s' % str(leftBound - rightBound))
-					if (leftBound - rightBound) > 0:
-						car_cmd_msg = Twist2DStamped()
-						if msg_header is not None:
-							car_cmd_msg.header = msg_header
-						car_cmd_msg.v = 0
-						car_cmd_msg.omega = 0
-						self.publishCmd(car_cmd_msg)
-						for _ in range(10):
-							self.gearbox.down()
-						return True
-			return False
-		except:
-			pass
+		for tl, tr, br, bl in self.detection_list:
+			if ((bl[0] > 0) and (bl[0] < self.obs_stop_thresh)) or ((br[0] > 0) and (br[0] < self.obs_stop_thresh)):
+				robot_occ = [-self.robot_width / 2, self.robot_width / 2]
+				rightBound = np.maximum(-self.robot_width, br[1])
+				leftBound = np.minimum(self.robot_width, bl[1])
+				# self.loginfo('bl: %s | br: %s' % (str(bl), str(br)))
+				# self.loginfo('tl: %s | tr: %s' % (str(tl), str(tr)))
+				# self.loginfo('leftBound - rightBound: %s' % str(leftBound - rightBound))
+				if (leftBound - rightBound) > 0:
+					car_cmd_msg = Twist2DStamped()
+					if msg_header is not None:
+						car_cmd_msg.header = msg_header
+					car_cmd_msg.v = 0
+					car_cmd_msg.omega = 0
+					self.publishCmd(car_cmd_msg)
+					for _ in range(10):
+						self.gearbox.down()
+					return True
+		return False
 
 	def segmentUnpack(self, gp_segment_list):
 		white_points_p0 = []
