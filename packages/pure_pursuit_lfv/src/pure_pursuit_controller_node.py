@@ -302,6 +302,9 @@ class pure_pursuit(object):
 		else:
 			self.avg_yellow_buffer.pop()
 		
+		# if turn_state == 'straight':
+		# 	self.loginfo('-')
+
 		return turn_state
 	
 	def updateGearbox(self, following_yellow):
